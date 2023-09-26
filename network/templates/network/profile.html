@@ -1,0 +1,140 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <div class="profile-header">
+        <div>{{ viewed_user.first_name }} {{ viewed_user.last_name }}</div>
+        {% if post_count <= 1 %}
+            <div class="post-count">{{ post_count }} post </div>
+        {% elif post_count > 1 %}
+            <div class="post-count">{{ post_count }} posts </div>
+        {% endif %}
+        </div>
+        <div class="profile-container">
+            <div class="profile-top">
+                <div class="image-container">
+                    <img src="{{ viewed_user.profile_picture.url }}">
+                </div>
+                {% if request.user.username == viewed_user.username %}
+                <div class="follow-button-container">
+                    <button class="setup-profile" id="setup" title="Set up profile" value="{{ viewed_user.username }}">Set up profile</button>
+                </div>
+                {% elif request.user.username != viewed_user.username %}
+                    {% if currently_followed == False %}
+                        <div class="follow-button-container">
+                            <button class="toggle-follow-button" id="follow" title="Follow" value="{{ viewed_user.username }}">Follow</button>
+                        </div>
+                    {% else %}
+                        <div class="follow-button-container">
+                            <button class="toggle-follow-button" id="unfollow" title="Unfollow" value="{{ viewed_user.username }}">Following</button>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="profile-bio-container">
+                <div style="font-size: 22px"><strong>{{ viewed_user.first_name }} {{ viewed_user.last_name }}</strong></div>
+                <div style="font-size: 16px; color: gray">@{{ viewed_user.username }}</div>
+                <div class="profile-bio"> 
+                    {{ viewed_user.bio }}
+                </div>
+            </div>
+            
+            <div class="profile-following">
+                <span class="following-count">{{ following_count }}</span> Following <span class="follower-count">{{ follower_count }}</span> Followers
+            </div>
+        </div>
+
+        {% for post in viewed_user_posts %}
+            <div class="post-outer-container">
+
+                <div class="post-container">
+                    <div class="profile-pic">
+                        <a href="/profile/{{ viewed_user.username }}">
+                            <img src="{{ viewed_user.profile_picture.url }}">
+                        </a>
+                    </div>
+                    <div class="post-body-container">
+                        <div class="post-body-top">
+                            <div>
+                                <b>{{ post.user.first_name }} {{ post.user.last_name }}</b> @{{ post.user.username }}</a> · {{ post.get_time }}
+                            </div>
+                            {% if post.user == request.user %}
+                                <a class="edit" data-post-id="{{ post.id }}" href="#">Edit</a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="post-body" data-post-id="{{ post.id }}" data-status="close">
+                            <div class="original-post">{{ post.body }}</div>
+                            <form class="edit-form display-hide">
+                                <textarea maxlength="280" rows="2" name="body" required>{{ post.body }}</textarea>
+                                <button class="save-button" data-post-id="{{ post.id }}" type="">Save</button>
+                            </form>
+                        </div>
+
+                        {% if user.is_authenticated %}
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-primary m-1 p-1">Comment</button>
+                            <button type="button" class="btn btn-primary m-1 p-1">Retweet</button>
+                            {% if request.user in post.likes.all %}
+                                <button type="button" class="d-flex like-container btn btn-outline-danger" id="liked" title="Unlike" value="{{ post.id }}"><i class="bi bi-balloon-heart-fill mx-3"></i><div class="like-count">{{ post.total_likes }}</div></button>
+                            {% else %}
+                                <button type="button" class="d-flex like-container btn btn-outline-danger fs-5" id="not-liked" title="Like" value="{{ post.id }}"><i class="bi bi-balloon-heart-fill mx-3"></i><div class="like-count">{{ post.total_likes }}</div></button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+
+            </div>
+        {% endfor %}
+       
+        <nav aria-label="Page navigation ">
+            <ul class="pagination justify-content-center mt-3">
+    
+                {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a id="prev" class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item">
+                <a id="prev" class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+    
+    
+              {% endif %}
+    
+              <span class="current fs-5 mx-3">
+                Page {{ viewed_user_posts.number }} of {{ viewed_user_posts.paginator.num_pages }}
+            </span>
+    
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                    <a id="next" class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+              </li>
+              {% else %}
+              <li class="page-item">
+                <a id="next" class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+          </li>
+              {% endif %}
+            </ul>
+          </nav>
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script type="module" src="{% static 'network/profile.js' %}"></script>
+{% endblock %}
