@@ -30,5 +30,5 @@
 ## Demo
 
 - Youtube Link:
-  - https://www.youtube.com/watch?v=NkVsJGl5d6E
+  - https://youtu.be/sDAuzTSoRS8
 
