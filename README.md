@@ -8,7 +8,13 @@
   - JavaScript
 
 - Framework/Libraries:
-  - Bootstrap
+  - Bootstrap 5.3
+
+ - Icons:
+  - Bootstrap /icons
+
+- Fonts:
+  - Google Fonts
 
 **Backend**
 
